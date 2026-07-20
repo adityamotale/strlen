@@ -25,8 +25,8 @@ int main(void) {
   memset(s, 'A', BUFFER_SIZE - 1);
   s[BUFFER_SIZE - 1] = '\0';
 
-  const int WARMUP_ITERS = 0x1000;
-  const int ITERATIONS = 0x1000000;
+  const int WARMUP_ITERS = 0x100;
+  const int ITERATIONS = 0x1000;
 
   size_t dummy_sum = 0;
   for (int i = 0; i < WARMUP_ITERS; i++) {
