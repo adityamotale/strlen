@@ -1,8 +1,10 @@
+; Compile using `nasm -f elf64 strlen.asm -o strlen.o`
+
 bits 64
 default rel
 
 section .text
-	global strlen
+    global strlen
 
 ; ------------------------------------------------------------
 ; size_t strlen(const char *str)
@@ -12,27 +14,26 @@ section .text
 ;   rax = length
 ; ------------------------------------------------------------
 strlen:
-	mov rax, rdi
-	vpxor ymm2, ymm2, ymm2
+    mov rax, rdi
+    vpxord zmm1, zmm1, zmm1       
 
 .loop:
-	vmovdqu ymm0, [rdi]
-	
-	vpcmpeqb ymm1, ymm0, ymm2
-	vpmovmskb ecx, ymm1
+    vmovdqu8 zmm0, [rdi]          
+    
+    vpcmpb k1, zmm0, zmm1, 0      
+    kmovq rcx, k1                 
 
-	test    ecx, ecx
-	jnz     .found
+    test rcx, rcx
+    jnz .found
 
-	add     rdi, 0x20
-	jmp     .loop
+    add rdi, 64
+    jmp .loop
 
 .found:
-	tzcnt   ecx, ecx
-	
-	sub     rdi, rax
-	add     rax, rdi
-	add     rax, rcx
-	
-	vzeroupper
-	ret
+    tzcnt rcx, rcx                
+    
+    sub rdi, rax
+    lea rax, [rdi + rcx]          
+    
+    vzeroupper
+    ret
